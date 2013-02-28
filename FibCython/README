@@ -1,0 +1,6 @@
+To compile the two modules, use the commands:
+
+python setup.py build_ext -i
+python csetup.py build_ext -i
+
+The two modules will be named fib (for Cython) and _fib (for C).
