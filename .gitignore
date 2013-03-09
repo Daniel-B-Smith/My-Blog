@@ -1,3 +1,7 @@
 *~
 *.so
 *.html
+*.lprof
+*.prof
+*.log
+*.pyc
