@@ -34,7 +34,7 @@ def type_classify(float x, float c, float b):
             return 0.5
 
 @cython.boundscheck(False)
-def fast_classify(np.ndarray[np.float_t, ndim=1] data, float c, float b):
+def cy_classify(np.ndarray[np.float_t, ndim=1] data, float c, float b):
     cdef unsigned int i
     cdef np.ndarray[np.float_t, ndim=1] out = np.zeros(data.shape[0], 
                                                        dtype=float)
