@@ -17,26 +17,43 @@ class SLNode(object):
         Use __call__ to insert a node into a skip list.
         self.right is always defined since a skip list is initialized with
         -np.inf and np.inf as the two sentinel nodes.
+
+        UNSAFE OUTSIDE OF SKIP LIST!
         """
         self.right.left = self.__class__(value)
         self.right.left.right = self.right
         self.right = self.right.left
         self.right.left = self
     
+    def __del__(self):
+        if self.right and self.left:
+            self.right.left = self.left
+            self.left.right = self.right
+        if self.up:
+            del self.up
+        if self.down:
+            del self.down
+        del self.value
+
     def __str__(self):
         return "A skip list node with value {}".format(self.value)
 
 class SkipList(object):
     def __init__(self):
-        self.head = []
-        self.tail = []
-        self._init_level()
+        self.head = SLNode(-np.inf)
+        self._tail = SLNode(np.inf)
+        self.head.right = self._tail
+        self._tail.left = self.head
 
     def _init_level(self):
-        self.head.append(SLNode(-np.inf))
-        self.tail.append(SLNode(np.inf))
-        self.head[-1].right = self.tail[-1]
-        self.tail[-1].left = self.head[-1]
+        self.head.up = SLNode(-np.inf)
+        self.head.up.down = self.head
+        self.head = self.head.up
+        self._tail.up = SLNode(np.inf)
+        self._tail.up.down = self._tail
+        self._tail = self._tail.up
+        self.head.right = self._tail
+        self._tail.left = self.head
 
     def iterate(self, start=None, stop=None):
         """
@@ -44,47 +61,51 @@ class SkipList(object):
         list.
         """
         if start is None:
-            start = self.head[0].right
-        if stop is None:
-            stop = self.tail[0]
+            node = self.head
+            while node.down:
+                node = node.down
+            start = node.right
 
         node = start
-        while node.right!=stop:
+        while node!=stop and node.value<np.inf:
             yield node.value
             node = node.right
-        
+
     def insert(self, value):
-        node = self.head[-1].right
-        while value < node.value or node.down is not None:
-            if value > node.value:
-                node = node.right
-            elif value == node.value:
-                node = node.down if node.down else node
+        node = self.head.right
+        while node.down:
+            if value < node.right.value:
+                node = node.down
             else:
-                node = node.left.down if node.left.down else node.left
-        node(value)
-        self._raise_level(node.right)
+                node = node.right
+        while value > node.value:
+            node = node.right
+        node.left(value)
+        self._raise_level(node.left)
 
     def _raise_level(self, node):
         if self._raise_check():
             up_check = node.left
             while up_check.up is None and up_check.value>-np.inf:
                 up_check = up_check.left
-            if up_check.value>-np.inf:
-                node.up = up_check.up(node.value)
-                self._raise_level(node.up)
-            else:
+            if up_check.up is not None:
+                place_node = up_check.up
+                place_node(node.value)
+                node.up = place_node.right
+                place_node.right.down = node
+                self._raise_level(place_node.right)
+            elif up_check.up is None:
                 self._init_level()
-                self.head[-1](node.value)
-
+                self.head(node.value)
+                node.up = self.head.right
+                self.head.right.down = node
+                self._raise_level(self.head.right)
 
     def _raise_check(self):
-        return (np.random.rand>0.5)
-        
+        return (np.random.rand()>0.5)
 
     def __str__(self):
         return "Skip list object"
-
 
 def main():
     print "Nothing to see here!"
