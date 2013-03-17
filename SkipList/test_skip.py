@@ -25,8 +25,9 @@ def test_node():
     assert up_node.down.up == up_node
     assert down_node.up.down == down_node
 
-def test_skip_list():
-    s_list = skip_list.SkipList()
+def test_skip_list(s_list=None):
+    if s_list is None:
+        s_list = skip_list.SkipList()
     assert s_list.head.up is None
     assert s_list.head.left is None
     assert s_list.head.down is None
@@ -41,6 +42,17 @@ def test_skip_list():
     assert s_list._tail.down.value == np.inf
     assert s_list.head.right == s_list._tail
     assert s_list._tail.left == s_list.head
+
+def _skip_list_structure(s_list, structure):
+    node = s_list.head
+    i = 0
+    while node.down:
+        for j, val in enumerate(s_list.iterate(start=node.right)):
+            assert structure[i][j] == val
+        i += 1
+        node = node.down
+    for j, val in enumerate(s_list.iterate(start=node.right)):
+        assert structure[i][j] == val
 
 def test_skip_list_insert():
     np.random.seed(1234)
@@ -59,16 +71,24 @@ def test_skip_list_insert():
            [1,       17, 32], 
            [1, 3, 5, 17, 32]]
 
-    node = s_list.head
-    i = 0
-    while node.down:
-        for j, val in enumerate(s_list.iterate(start=node.right)):
-            assert out[i][j] == val
-        i += 1
-        node = node.down
-    for j, val in enumerate(s_list.iterate(start=node.right)):
-        assert out[i][j] == val
+    _skip_list_structure(s_list, out)
 
+    node = s_list.find(13)
+    assert node is None
+    node = s_list.find(17)
+    assert node.down is None
+    assert node.value==17
+
+    out = [[         32],
+           [         32],
+           [1,       32], 
+           [1, 3, 5, 32]]
+
+    s_list.delete(17)
+    _skip_list_structure(s_list, out)
+
+    s_list.reset()
+    test_skip_list(s_list=s_list)
     
 if __name__ == "__main__":
     np_test.run_module_suite()

@@ -25,16 +25,6 @@ class SLNode(object):
         self.right = self.right.left
         self.right.left = self
     
-    def __del__(self):
-        if self.right and self.left:
-            self.right.left = self.left
-            self.left.right = self.right
-        if self.up:
-            del self.up
-        if self.down:
-            del self.down
-        del self.value
-
     def __str__(self):
         return "A skip list node with value {}".format(self.value)
 
@@ -72,7 +62,7 @@ class SkipList(object):
             node = node.right
 
     def insert(self, value):
-        node = self.head.right
+        node = self.head
         while node.down:
             if value < node.right.value:
                 node = node.down
@@ -82,6 +72,37 @@ class SkipList(object):
             node = node.right
         node.left(value)
         self._raise_level(node.left)
+
+    def find(self, value):
+        node = self.head
+        while node.down:
+            if value < node.right.value:
+                node = node.down
+            else:
+                node = node.right
+        while value >= node.value:
+            if value==node.value:
+                return node
+            else:
+                node = node.right
+        return None
+
+    def _delete(self, node):
+        node.right.left = node.left
+        node.left.right = node.right
+
+    def delete(self, value):
+        node = self.find(value)
+        if node is None:
+            raise ValueError('{} not in skip list'.format(value))
+        else:
+            while node.up:
+                self._delete(node)
+                upnode = node.up
+                del node.up
+                node = upnode
+                del node.down
+            self._delete(node)
 
     def _raise_level(self, node):
         if self._raise_check():
@@ -106,6 +127,35 @@ class SkipList(object):
 
     def __str__(self):
         return "Skip list object"
+
+    def _que_append(self, node, queue):
+        if node and node not in queue:
+            queue.append(node)
+
+    def reset(self):
+        del_queue = [self.head]
+        while del_queue:
+            node = del_queue.pop(0)
+            if hasattr(node, 'up'):
+                self._que_append(node.up, del_queue)
+                del node.up
+            if hasattr(node, 'down'):
+                self._que_append(node.down, del_queue)
+                del node.down
+            if hasattr(node, 'right'):
+                self._que_append(node.right, del_queue)
+                del node.right
+            if hasattr(node, 'left'):
+                self._que_append(node.left, del_queue)
+                del node.left
+        self.__init__()
+
+    def __del__(self):
+        self.reset()
+        del self.head.right
+        del self.head
+        del self._tail.left
+        del self._tail
 
 def main():
     print "Nothing to see here!"
