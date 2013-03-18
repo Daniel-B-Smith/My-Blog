@@ -16,7 +16,7 @@ class SLNode(object):
         """
         Use __call__ to insert a node into a skip list.
         self.right is always defined since a skip list is initialized with
-        -np.inf and np.inf as the two sentinel nodes.
+        -inf and inf as the two sentinel nodes.
 
         UNSAFE OUTSIDE OF SKIP LIST!
         """
@@ -30,8 +30,8 @@ class SLNode(object):
 
 class SkipList(object):
     def __init__(self):
-        self.head = SLNode(-np.inf)
-        self._tail = SLNode(np.inf)
+        self.head = SLNode(float("-inf"))
+        self._tail = SLNode(float("inf"))
         self.head.right = self._tail
         self._tail.left = self.head
 
@@ -39,9 +39,6 @@ class SkipList(object):
         self.head.up = SLNode(-np.inf)
         self.head.up.down = self.head
         self.head = self.head.up
-        self._tail.up = SLNode(np.inf)
-        self._tail.up.down = self._tail
-        self._tail = self._tail.up
         self.head.right = self._tail
         self._tail.left = self.head
 
@@ -57,7 +54,7 @@ class SkipList(object):
             start = node.right
 
         node = start
-        while node!=stop and node.value<np.inf:
+        while node!=stop and node.value<float("inf"):
             yield node.value
             node = node.right
 
@@ -68,10 +65,10 @@ class SkipList(object):
                 node = node.down
             else:
                 node = node.right
-        while value > node.value:
+        while value > node.right.value:
             node = node.right
-        node.left(value)
-        self._raise_level(node.left)
+        node(value)
+        self._raise_level(node.right)
 
     def find(self, value):
         node = self.head
@@ -102,12 +99,13 @@ class SkipList(object):
                 del node.up
                 node = upnode
                 del node.down
+                del upnode
             self._delete(node)
 
     def _raise_level(self, node):
         if self._raise_check():
             up_check = node.left
-            while up_check.up is None and up_check.value>-np.inf:
+            while up_check.up is None and up_check.value>float("-inf"):
                 up_check = up_check.left
             if up_check.up is not None:
                 place_node = up_check.up
@@ -115,7 +113,7 @@ class SkipList(object):
                 node.up = place_node.right
                 place_node.right.down = node
                 self._raise_level(place_node.right)
-            elif up_check.up is None:
+            else:
                 self._init_level()
                 self.head(node.value)
                 node.up = self.head.right

@@ -39,7 +39,6 @@ def test_skip_list(s_list=None):
 
     s_list._init_level()
     assert s_list.head.down.value == -np.inf
-    assert s_list._tail.down.value == np.inf
     assert s_list.head.right == s_list._tail
     assert s_list._tail.left == s_list.head
 
