@@ -36,6 +36,7 @@ class RankSkipList(object):
         self._tail = RSLNode(float("inf"))
         self.head.right = self._tail
         self._tail.left = self.head
+        self.n_items = 0
 
     def _init_level(self):
         self.head.up = RSLNode(-np.inf)
@@ -47,7 +48,8 @@ class RankSkipList(object):
     def iterate(self, start=None, stop=None):
         """
         Creates a generator that loops through the data in the bottom
-        list.
+        list. If start and stop are defined, includes start and stops at
+        stop.left, e.g. generates [start, stop)
         """
         if start is None:
             node = self.head
@@ -56,11 +58,12 @@ class RankSkipList(object):
             start = node.right
 
         node = start
-        while node!=stop and node.value<float("inf"):
+        while node!=stop and node.value < float("inf"):
             yield node.value
             node = node.right
 
     def insert(self, value):
+        self.n_items += 1
         node = self.head
         while node.down:
             if value < node.right.value:
@@ -87,6 +90,19 @@ class RankSkipList(object):
             else:
                 node = node.right
         return None
+    
+    def find_rank(self, rank):
+        if rank <= 0 or rank > self.n_items:
+            raise ValueError
+        node = self.head
+        while rank > 0 or node.down:
+            if rank < node.right.accum:
+                if node.down:
+                    node = node.down
+            else:
+                node = node.right
+                rank -= node.accum
+        return node
 
     def _delete(self, node):
         node.right.left = node.left
@@ -152,7 +168,6 @@ class RankSkipList(object):
         while del_queue:
             node = del_queue.pop(0)
             if hasattr(node, 'up'):
-                self._que_append(node.up, del_queue)
                 del node.up
             if hasattr(node, 'down'):
                 self._que_append(node.down, del_queue)
@@ -161,7 +176,6 @@ class RankSkipList(object):
                 self._que_append(node.right, del_queue)
                 del node.right
             if hasattr(node, 'left'):
-                self._que_append(node.left, del_queue)
                 del node.left
         self.__init__()
 
@@ -185,6 +199,9 @@ class RankSkipList(object):
         del self.head
         del self._tail.left
         del self._tail
+
+    def count(self):
+        return self.n_items
 
 def main():
     print "Nothing to see here!"
