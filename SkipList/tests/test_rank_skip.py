@@ -130,6 +130,8 @@ def test_rank_random():
                             np.random.choice(data, size=20, replace=False)))
     for val in test_ranks:
         assert _rank(data, val) == s_list.rank(val)
+    for index in np.random.randint(1, N+1, size=int(0.1*N)):
+        assert data[index-1] == s_list.find_rank(index).value
 
     deletes = np.random.choice(data, size=int(0.1*N), replace=False)
     for d in deletes:
@@ -138,6 +140,8 @@ def test_rank_random():
 
     for val in test_ranks:
         assert _rank(data, val) == s_list.rank(val)
+    for index in np.random.randint(1, int(0.9*N+1), size=int(0.1*N)):
+        assert data[index-1] == s_list.find_rank(index).value
 
 if __name__ == "__main__":
     np_test.run_module_suite()
