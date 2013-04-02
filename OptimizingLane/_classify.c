@@ -40,7 +40,7 @@ static PyObject* _classify_classify(PyObject* self, PyObject* args) {
       OUT[iN] = classify(x[iN], c, b);
   }
 
-  return Py_BuildValue("N",vecout);
+  return vecout;
 }
 
 static PyMethodDef _classify_methods[] =
