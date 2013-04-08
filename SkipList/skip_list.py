@@ -135,7 +135,6 @@ class SkipList(object):
         while del_queue:
             node = del_queue.pop(0)
             if hasattr(node, 'up'):
-                self._que_append(node.up, del_queue)
                 del node.up
             if hasattr(node, 'down'):
                 self._que_append(node.down, del_queue)
@@ -144,7 +143,6 @@ class SkipList(object):
                 self._que_append(node.right, del_queue)
                 del node.right
             if hasattr(node, 'left'):
-                self._que_append(node.left, del_queue)
                 del node.left
         self.__init__()
 
