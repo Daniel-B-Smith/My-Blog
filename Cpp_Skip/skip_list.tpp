@@ -12,14 +12,14 @@ SkipList<T>::SkipList() :
 	numeric_limits<T>::max()),	
   n_inf(numeric_limits<T>::has_infinity ? -numeric_limits<T>::infinity() :
 	numeric_limits<T>::min()),  head(new Node<T>(n_inf)), 
-  tail(new Node<T>(p_inf)), levels(1), p_up(0.5) { 
+  tail(new Node<T>(p_inf)), levels(1), p_up(0.5), n_elem(0) { 
   head->right = tail; tail->left = head; }
 
 template <class T>
 SkipList<T>::SkipList(const SkipList<T>& other) : p_inf(other.p_inf),
 						  n_inf(other.n_inf),
 						  levels(other.levels), 
-						  p_up(other.p_up) {
+						  p_up(other.p_up), n_elem(0) {
   head = new Node<T>(n_inf);
   tail = new Node<T>(p_inf);
   head->right = tail;
@@ -47,7 +47,7 @@ SkipList<T>::copy(SkipList<T>& new_, const SkipList<T>& other) {
   Node<T>* n_start, *n_end, * n_node, * o_row, * o_node;
   n_node = head;
   for (o_node=other.head->right; o_node->right; o_node=o_node->right) {
-    n_node->right = new Node<T>(o_node->value);
+    n_node->right = new Node<T>(o_node->get_value());
     n_node->right->left = n_node;
     n_node = n_node->right;
   }
@@ -59,13 +59,13 @@ SkipList<T>::copy(SkipList<T>& new_, const SkipList<T>& other) {
   n_start = new_.head;
   while (o_row->down) {
     o_row = o_node = o_row->down;
-    n_start->down = new Node<T>(o_row->value);
+    n_start->down = new Node<T>(o_row->get_value());
     n_start->down->up = n_start;
     n_start = n_start->down;
     n_node = n_start;
     while (o_node->right) {
       o_node = o_node->right;
-      n_node->right = new Node<T>(o_node->value);
+      n_node->right = new Node<T>(o_node->get_value());
       n_node->right->left = n_node;
       n_node = n_node->right;
     }
@@ -87,12 +87,10 @@ SkipList<T>::list_insert(Node<T>* node, T value) {
 template <class T> void
 SkipList<T>::raise_level(Node<T>* node, T value) {
   Node<T> * upnode = node->left;
-  while (!(upnode->up) && upnode->left) {
+  while (!(upnode->up) && upnode->left)
     upnode = upnode->left;
-  }
-  if (upnode->up) {
+  if (upnode->up)
     upnode = upnode->up;
-  }
   else {
     insert_level();
     upnode = head;
@@ -105,14 +103,12 @@ SkipList<T>::raise_level(Node<T>* node, T value) {
 
 template <class T> void
 SkipList<T>::insert_level() {
-  Node<T>* new_node = new Node<T>(n_inf);
-  new_node->down = head;
-  head->up = new_node;
-  head = new_node;
-  new_node = new Node<T>(p_inf);
-  new_node->down = tail;
-  tail->up = new_node;
-  tail = new_node;
+  head->up = new Node<T>(n_inf);
+  head->up->down = head;
+  head = head->up;
+  tail->up = new Node<T>(p_inf);
+  tail->up->down = tail;
+  tail = tail->up;
   head->right = tail;
   tail->left = head;
   levels++;
@@ -120,15 +116,16 @@ SkipList<T>::insert_level() {
 
 template <class T> void
 SkipList<T>::insert(const T value) {
+  if (value == n_inf || value == p_inf)
+    return;
   Node<T> * node = head;
-  while (value >= node->value) {
-    if (value == node->value)
-      return;
-    else if (value < node->right->value && node->down) 
+  while (value >= node->get_value()) {
+    if (value < node->right->get_value() && node->down) 
       node = node->down;
     else
       node = node->right;
   }
+  n_elem++;
   list_insert(node->left, value);
   if (raise_check()) 
     raise_level(node->left, value);
@@ -144,7 +141,7 @@ SkipList<T>::print_level(int level) {
   cout << "Printing level: " << level << endl << "  ";
   node = node->right;
   while (node->right) {
-    cout << node->value << "  ";
+    cout << node->get_value() << "  ";
     node = node->right;
   }
   cout << endl;
@@ -167,12 +164,12 @@ SkipList<T>::delete_list(Node<T> * node) {
 template <class T> Node<T> *
 SkipList<T>::find(T value) {
   Node<T> * node = head;
-  while (value >= node->value) {
-    if (value == node->value) {
+  while (value >= node->get_value()) {
+    if (value == node->get_value()) {
       while (node->down)
 	node = node->down;
       return node;
-    } else if (value < node->right->value && node->down) 
+    } else if (value < node->right->get_value() && node->down) 
       node = node->down;
     else
       node = node->right;
@@ -197,6 +194,7 @@ SkipList<T>::remove(T value) {
     delete_node(node->down);
   }
   delete_node(node);
+  n_elem--;
   return 1;
 }
 
@@ -219,6 +217,7 @@ SkipList<T>::reset() {
   head->right = tail; // Reset head and tail state
   tail->left = head;
   head->down = tail->down = NULL;
+  n_elem = 0;
 }
 
 template <class T> 

@@ -5,20 +5,17 @@
 
 template <class T>
 class Node {
- public:
+protected:
+  T value;
+public:
   Node * left;
   Node * right;
   Node * up;
   Node * down;
-  T value;
  Node(T value) : value(value) {
     left = right = up = down = NULL;
   };
-  T get_value(void) { return value; };
-  Node * get_right(void) { return right; };
-  Node * get_left(void) { return left; };
-  Node * get_up(void) { return up; };
-  Node * get_down(void) { return down; };
+  T get_value() {return value;};
 };
 
 template <class T>
@@ -44,6 +41,7 @@ class SkipList {
   SkipList<T>& operator=(const SkipList<T>& rhs);
   ~SkipList();
   int levels;
+  int n_elem;
   float p_up;
   void insert(const T value);
   bool remove(T value);
