@@ -39,14 +39,15 @@ BOOST_AUTO_TEST_CASE(test_linking)
     while (node->right) {
       BOOST_CHECK_EQUAL(node, node->right->left);
       if (node->left)
-	BOOST_CHECK_EQUAL(node, node->left->right);
+        BOOST_CHECK_EQUAL(node, node->left->right);
       if (node->up)
-	BOOST_CHECK_EQUAL(node, node->up->down);
-      if (row->down)
-	if (node->down)
-	  BOOST_CHECK_EQUAL(node, node->down->up);
-	else
-	  BOOST_CHECK_MESSAGE(1<0, "Node is missing down pointer!\n");
+        BOOST_CHECK_EQUAL(node, node->up->down);
+      if (row->down) {
+        if (node->down)
+          BOOST_CHECK_EQUAL(node, node->down->up);
+        else
+          BOOST_CHECK_MESSAGE(1<0, "Node is missing down pointer!\n");
+      }
       node = node->right;
     }
     row = row->down;
