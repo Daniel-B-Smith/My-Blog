@@ -105,7 +105,7 @@ class SkipList(object):
     def _raise_level(self, node):
         if self._raise_check():
             up_check = node.left
-            while up_check.up is None and up_check.value>float("-inf"):
+            while up_check.up is None and up_check.left:
                 up_check = up_check.left
             if up_check.up is not None:
                 place_node = up_check.up
