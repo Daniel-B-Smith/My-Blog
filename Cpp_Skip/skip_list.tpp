@@ -19,13 +19,14 @@ SkipList<T>::SkipList() :
 }
 
 template <class T> void
-SkipList<T>::set_seed() {
-  unsigned int seed;
-  try {
-    std::random_device rd;
-    seed = rd();
-  } catch (...) {
-    seed = time(NULL);
+SkipList<T>::set_seed(unsigned int seed=0) {
+  if (!seed) {
+    try {
+      std::random_device rd;
+      seed = rd();
+    } catch (...) {
+      seed = time(NULL);
+    }
   }
   generator.seed(seed);
 }

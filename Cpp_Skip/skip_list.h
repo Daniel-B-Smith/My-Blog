@@ -43,7 +43,7 @@ class SkipList {
   SkipList(const SkipList<T>& list_to_copy);
   SkipList<T>& operator=(const SkipList<T>& rhs);
   ~SkipList();
-  void set_seed();
+  void set_seed(unsigned int seed);
   void insert(const T value);
   bool remove(T value);
   Node<T> * find(T value);
