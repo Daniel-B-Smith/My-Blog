@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(test_find)
 {
   s_list.insert(17);
 
-  BOOST_CHECK_EQUAL(s_list.find(17)->value, 17);
+  BOOST_CHECK_EQUAL(s_list.find(17)->get_value(), 17);
   BOOST_CHECK(!(s_list.find(17)->down));
   BOOST_CHECK(!s_list.find(MAX_INSERT+1));
 }
@@ -83,11 +83,11 @@ BOOST_AUTO_TEST_CASE(test_ordering)
   while (node->down) {
     node = row;
     while (node->right) {
-      BOOST_CHECK_LT(node->value, node->right->value);
+      BOOST_CHECK_LE(node->get_value(), node->right->get_value());
       if (node->up) 
-	BOOST_CHECK_EQUAL(node->value, node->up->value);
+	BOOST_CHECK_EQUAL(node->get_value(), node->up->get_value());
       if (node->down)
-	BOOST_CHECK_EQUAL(node->value, node->down->value);
+	BOOST_CHECK_EQUAL(node->get_value(), node->down->get_value());
       node = node->right;
     }
     row = row->down;
@@ -137,12 +137,12 @@ BOOST_AUTO_TEST_CASE(test_copy_constructor)
     BOOST_REQUIRE_MESSAGE(n_node->right,
 			  "Copy constructed list wrong shape!\n");
     BOOST_CHECK_NE(n_node, s_node);
-    BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+    BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
     s_node = s_node->right;
     n_node = n_node->right;
   }
   BOOST_CHECK_NE(n_node, s_node);
-  BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+  BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
   BOOST_CHECK_MESSAGE(!n_node->right, "Copy constructed list wrong shape!\n");
   while (s_row->down) {
     BOOST_REQUIRE_MESSAGE(n_row->down, 
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(test_copy_constructor)
       BOOST_REQUIRE_MESSAGE(n_node->right,
 			    "Copy constructed list wrong shape!\n");
       BOOST_CHECK_NE(n_node, s_node);
-      BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+      BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
       s_node = s_node->right;
       n_node = n_node->right;
       if (!s_row->down)
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(test_copy_constructor)
       
     }
     BOOST_CHECK_NE(n_node, s_node);
-    BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+    BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
     BOOST_CHECK_MESSAGE(!n_node->right, "Copy constructed list wrong shape!\n");
   }
 }
@@ -185,12 +185,12 @@ BOOST_AUTO_TEST_CASE(test_assignment_operator)
     BOOST_REQUIRE_MESSAGE(n_node->right,
 			  "Copy constructed list wrong shape!\n");
     BOOST_CHECK_NE(n_node, s_node);
-    BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+    BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
     s_node = s_node->right;
     n_node = n_node->right;
   }
   BOOST_CHECK_NE(n_node, s_node);
-  BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+  BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
   BOOST_CHECK_MESSAGE(!n_node->right, "Copy constructed list wrong shape!\n");
   while (s_row->down) {
     BOOST_REQUIRE_MESSAGE(n_row->down, 
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(test_assignment_operator)
       BOOST_REQUIRE_MESSAGE(n_node->right,
 			    "Copy constructed list wrong shape!\n");
       BOOST_CHECK_NE(n_node, s_node);
-      BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+      BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
       s_node = s_node->right;
       n_node = n_node->right;
       if (!s_row->down)
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(test_assignment_operator)
       
     }
     BOOST_CHECK_NE(n_node, s_node);
-    BOOST_CHECK_EQUAL(n_node->value, s_node->value);
+    BOOST_CHECK_EQUAL(n_node->get_value(), s_node->get_value());
     BOOST_CHECK_MESSAGE(!n_node->right, "Copy constructed list wrong shape!\n");
   }
 }
