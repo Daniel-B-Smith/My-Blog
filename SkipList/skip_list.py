@@ -109,16 +109,13 @@ class SkipList(object):
                 up_check = up_check.left
             if up_check.up is not None:
                 place_node = up_check.up
-                place_node(node.value)
-                node.up = place_node.right
-                place_node.right.down = node
-                self._raise_level(place_node.right)
             else:
                 self._init_level()
-                self.head(node.value)
-                node.up = self.head.right
-                self.head.right.down = node
-                self._raise_level(self.head.right)
+                place_node = self.head
+            place_node(node.value)
+            node.up = place_node.right
+            place_node.right.down = node
+            self._raise_level(self.head.right)
 
     def _raise_check(self):
         return (np.random.rand()>0.5)
@@ -146,12 +143,14 @@ class SkipList(object):
                 del node.left
         self.__init__()
 
+    """
     def __del__(self):
         self.reset()
         del self.head.right
         del self.head
         del self._tail.left
         del self._tail
+    """
 
 def main():
     print "Nothing to see here!"
