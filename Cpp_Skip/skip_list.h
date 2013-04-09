@@ -28,21 +28,22 @@ class SkipList {
   void delete_list(Node<T>* node);
   void delete_node(Node<T>* node);
   void copy(SkipList<T>& new_, const SkipList<T>& other);
-  std::default_random_engine generator;
+  std::mt19937 generator;
   std::uniform_real_distribution<float> distribution;
-  T p_inf;
-  T n_inf;
+  const T p_inf;
+  const T n_inf;
 
  public:
   Node<T> * head;
   Node<T> * tail;
+  int levels;
+  int n_elem;
+  float p_up;
   SkipList();
   SkipList(const SkipList<T>& list_to_copy);
   SkipList<T>& operator=(const SkipList<T>& rhs);
   ~SkipList();
-  int levels;
-  int n_elem;
-  float p_up;
+  void set_seed();
   void insert(const T value);
   bool remove(T value);
   Node<T> * find(T value);

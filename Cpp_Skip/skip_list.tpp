@@ -1,6 +1,7 @@
 #include <iostream>
 #include <limits>
 #include <random>
+#include <time.h>
 #include "skip_list.h"
 
 using namespace std;
@@ -13,7 +14,21 @@ SkipList<T>::SkipList() :
   n_inf(numeric_limits<T>::has_infinity ? -numeric_limits<T>::infinity() :
 	numeric_limits<T>::min()),  head(new Node<T>(n_inf)), 
   tail(new Node<T>(p_inf)), levels(1), p_up(0.5), n_elem(0) { 
-  head->right = tail; tail->left = head; }
+  head->right = tail; tail->left = head; 
+  set_seed();
+}
+
+template <class T> void
+SkipList<T>::set_seed() {
+  unsigned int seed;
+  try {
+    std::random_device rd;
+    seed = rd();
+  } catch (...) {
+    seed = time(NULL);
+  }
+  generator.seed(seed);
+}
 
 template <class T>
 SkipList<T>::SkipList(const SkipList<T>& other) : p_inf(other.p_inf),
@@ -25,6 +40,7 @@ SkipList<T>::SkipList(const SkipList<T>& other) : p_inf(other.p_inf),
   head->right = tail;
   tail->left = head;
   copy(*this, other);
+  set_seed();
 }
 
 template <class T> SkipList<T>&
@@ -39,6 +55,7 @@ SkipList<T>::operator=( const SkipList<T>& rhs ) {
     swap(generator, tmp.generator);
     swap(distribution, tmp.distribution);
   }
+  set_seed();
   return *this;
 }
 
