@@ -11,6 +11,7 @@
 #define MAX_INSERT 10000
 
 using namespace std;
+using skip::SkipList;
 
 float std_dev(int N) {
   return 0.5 * sqrt( (float) N);
@@ -54,6 +55,10 @@ BOOST_AUTO_TEST_CASE(test_linking)
   }
 }
 
+void test() {
+  BOOST_CHECK(1<0);
+}
+
 BOOST_AUTO_TEST_CASE(test_find)
 {
   s_list.insert(17);
@@ -61,6 +66,8 @@ BOOST_AUTO_TEST_CASE(test_find)
   BOOST_CHECK_EQUAL(s_list.find(17)->get_value(), 17);
   BOOST_CHECK(!(s_list.find(17)->down));
   BOOST_CHECK(!s_list.find(MAX_INSERT+1));
+
+  test();
 }
 
 BOOST_AUTO_TEST_CASE(test_remove)
@@ -105,10 +112,10 @@ BOOST_AUTO_TEST_CASE(test_new_levels)
   row = s_list.head;
   while (row->down) 
     row = row->down;
-  while (row->up) {
+  while (1) {
     node = row;
-    // Node counts start at -1 to avoid counting sentinels 
-    int nodes = -1, upnodes = -1;
+    // Node count starts at -1 to avoid counting sentinels 
+    int nodes = -1, upnodes = 0;
     while (node->right) {
       if (node->up) 
 	upnodes++;
@@ -119,9 +126,12 @@ BOOST_AUTO_TEST_CASE(test_new_levels)
     BOOST_WARN_MESSAGE(abs((float) s_list.p_up*nodes-upnodes) < 
 		       3*std_dev(nodes),
 		       "Level increase rate > 3*sigma away from expected.\n"
-		       << "Total nodes = " << nodes << "; Nodes pointg up = " 
+		       << "Total nodes = " << nodes << "; Nodes pointing up = " 
 		       << upnodes << "\n");
-    row = row->up;
+    if (row->up)
+      row = row->up;
+    else
+      break;
   }
 }
 

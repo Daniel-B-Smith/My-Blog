@@ -2,13 +2,16 @@
 #include <limits>
 #include <random>
 #include <time.h>
+#include <cmath>
 #include "skip_list.h"
 
 using namespace std;
+using namespace skip;
 
 template <class T>
 SkipList<T>::SkipList() : 
-  distribution(uniform_real_distribution<float>(0.0, 1.0)),
+  distribution(uniform_int_distribution<unsigned int>
+	       (0, numeric_limits<unsigned int>::max())),
   p_inf(numeric_limits<T>::has_infinity ? numeric_limits<T>::infinity() :
 	numeric_limits<T>::max()),	
   n_inf(numeric_limits<T>::has_infinity ? -numeric_limits<T>::infinity() :
@@ -63,6 +66,7 @@ SkipList<T>::operator=( const SkipList<T>& rhs ) {
 template <class T> void
 SkipList<T>::copy(SkipList<T>& new_, const SkipList<T>& other) {
   Node<T>* n_start, *n_end, * n_node, * o_row, * o_node;
+  // Copy top row making sure to miss sentinels
   n_node = head;
   for (o_node=other.head->right; o_node->right; o_node=o_node->right) {
     n_node->right = new Node<T>(o_node->get_value());
@@ -72,6 +76,7 @@ SkipList<T>::copy(SkipList<T>& new_, const SkipList<T>& other) {
   n_node->right = new_.tail;
   new_.tail->left = n_node;
 
+  // Copy everything else
   o_row = other.head;
   n_end = new_.tail;
   n_start = new_.head;
@@ -132,10 +137,18 @@ SkipList<T>::insert_level() {
   levels++;
 }
 
+template <class T> bool
+SkipList<T>::raise_check(void) {
+  bool out = rand_check & 1;
+  rand_check >>= 1;
+  return out;
+}
+
 template <class T> void
 SkipList<T>::insert(const T value) {
   if (value == n_inf || value == p_inf)
     return;
+  rand_check = distribution(generator); // Initialize bit sequence for raises
   Node<T> * node = head;
   while (value >= node->get_value()) {
     if (value < node->right->get_value() && node->down) 

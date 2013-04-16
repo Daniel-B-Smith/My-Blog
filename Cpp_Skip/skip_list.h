@@ -3,6 +3,8 @@
 
 #include <random>
 
+namespace skip{
+
 template <class T>
 class Node {
 protected:
@@ -24,16 +26,17 @@ class SkipList {
   void list_insert(Node<T>* node, T Value); 
   void raise_level(Node<T>* node, T value);
   void insert_level();
-  bool raise_check(void) { return (p_up > distribution(generator)); };
+  bool raise_check(void);
   void delete_list(Node<T>* node);
   void delete_node(Node<T>* node);
   void copy(SkipList<T>& new_, const SkipList<T>& other);
   std::mt19937 generator;
-  std::uniform_real_distribution<float> distribution;
-  const T p_inf;
-  const T n_inf;
+  std::uniform_int_distribution<unsigned int> distribution;
+  unsigned int rand_check;
 
  public:
+  const T p_inf;
+  const T n_inf;
   Node<T> * head;
   Node<T> * tail;
   int levels;
@@ -51,6 +54,8 @@ class SkipList {
   void print_level(int level);
   void print_all();
 };
+
+}
 
 #include "skip_list.tpp"
 
