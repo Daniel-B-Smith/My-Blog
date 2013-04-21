@@ -10,5 +10,5 @@ module2 = Extension('classify_bad', sources = ['classify_bad.c'],
 module3 = Extension('_classify', sources = ['_classify.c'],
                     include_dirs=dir_include,)
 module4 = Extension('f_classify', sources = ['f_classify.c'],
-                    include_dirs=dir_include, extra_compiler_args=["-O3"])
+                    include_dirs=dir_include, extra_compile_args=["-O3"])
 setup(ext_modules = [module1, module2, module4])

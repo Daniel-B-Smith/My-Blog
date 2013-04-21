@@ -14,6 +14,7 @@ static char f_classify_docstring[] =
   "This function implements the fuzzy classification function.";
 
 double classify(double x, double c, double b);
+inline
 double o_classify(double x, double m, double w);
 
 static PyObject* f_classify_classify(PyObject* self, PyObject* args);
@@ -113,6 +114,7 @@ double classify(double x, double c, double b) {
   } 
 }
 
+inline
 double o_classify(double x, double m, double w) {
   double out = (x-m)*w;
   out = (out < 0) ? 0 : out;
