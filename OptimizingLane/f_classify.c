@@ -45,20 +45,8 @@ static PyObject* f_classify_classify(PyObject* self, PyObject* args) {
   npy_intp shape[] = {N};
   PyArrayObject *vecout = (PyArrayObject *) PyArray_SimpleNew(1, shape,  
 							      PyArray_DOUBLE);
-  /*if (PyArray_AsCArray(&vecout, (void *) &OUT, shape, nd, 
-		       PyArray_DescrFromType(PyArray_DOUBLE)) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Error obtaining C array.\n");
-    return NULL;
-    }
-  if (PyArray_AsCArray(&x_array, (void *) &x, shape, nd, 
-		       PyArray_DescrFromType(PyArray_DOUBLE)) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Error obtaining C array.\n");
-    return NULL;
-    }*/
-
   double *out = (double *) PyArray_DATA(vecout);
   double *x = (double *) PyArray_DATA(x_array);
-
 
   if (b < 1.2E-7) {
     for (iN=0; iN<N; iN++) 
