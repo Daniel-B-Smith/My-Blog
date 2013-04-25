@@ -70,7 +70,7 @@ static PyObject* f_classify_classify(PyObject* self, PyObject* args) {
 
   Py_DECREF(x_array);
 
-  return Py_BuildValue("N",vecout);
+  return vecout;
 }
 
 static PyMethodDef f_classify_methods[] =
