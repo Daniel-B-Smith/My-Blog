@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   // Start timing after initialization of x
   t = clock();
 
-  const stepsize = 8;
+  const int stepsize = 8;
   for (iM=0; iM<M; iM++) {
     for (iN=0; iN<ROUND_DOWN(N, stepsize); iN+=stepsize) {
       out[iN] = o_classify(x[iN], m, w);
